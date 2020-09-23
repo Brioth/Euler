@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Euler.Data
+﻿namespace Euler.Data
 {
     public class CsvUnitOfWork : IUnitOfWork
     {

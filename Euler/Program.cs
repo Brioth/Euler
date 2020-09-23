@@ -1,10 +1,6 @@
 ﻿using Euler.Data;
 using Euler.Models;
-using Microsoft.Extensions.Configuration;
 using System;
-using System.Buffers;
-using System.Linq;
-using System.Linq.Expressions;
 
 namespace Euler
 {
@@ -28,6 +24,7 @@ namespace Euler
                 {
                     case nameof(Commands.Exit):
                         exit = true;
+                        Exit();
                         break;
                     case nameof(Commands.Help):
                         ShowHelp();
@@ -39,13 +36,20 @@ namespace Euler
                         ShowProblem();
                         break;
                     case nameof(Commands.Solve):
-                        throw new NotImplementedException();
+                        SolveProblem();
                         break;
                     default:
                         Console.WriteLine("invalid commands, type 'Help' to view valid commands");
                         break;
                 }
             }            
+        }
+
+        private static void Exit()
+        {
+            Console.WriteLine("Do you want to save?");
+            var save = ProcessYN();
+            if (save) _uow.Save();
         }
 
         private static void Initialize()
@@ -87,19 +91,34 @@ namespace Euler
             var solve = ProcessYN();
             if (solve)
             {
-                Console.WriteLine("Please insert parameters");
-                var input = GetInput();
-                var output = _solver.Solve(problem, input);
-                Console.WriteLine(output);
-            } else
+                SolveProblem(problem);
+            }
+            else
             {
                 return;
             }
 
+            _uow.Save();
+        }
+
+        private static void SolveProblem()
+        {
+            Console.WriteLine("Which problem do you want to solve?");
+            var eulerId = Convert.ToInt32(Console.ReadLine());
+
+            Problem problem = _uow.Problems.GetByEulerId(eulerId);
+            SolveProblem(problem);
+        }
+
+        private static void SolveProblem(Problem problem)
+        {
+            Console.WriteLine("Please insert parameters");
+            var input = GetInput();
+            problem.Solution = _solver.Solve(problem, input);
+            Console.WriteLine(String.Format("The solution is {0}", problem.Solution));
+
             Console.WriteLine("Mark problem as completed?");
             problem.Solved = ProcessYN();
-
-            _uow.Save();
         }
 
         private static void ShowProblem()

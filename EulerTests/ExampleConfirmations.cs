@@ -34,5 +34,19 @@ namespace EulerTests
             // Assert
             Assert.AreEqual(23, result);
         }
+
+        [Test]
+        public void Problem2_ShouldReturn()
+        {
+            // Arrange
+            _problem.EulerId = 2;
+            int[] input = { 100 };
+
+            // Act
+            var result = _solver.Solve(_problem, input);
+
+            // Assert
+            Assert.AreEqual(44, result);
+        }
     }
 }
